@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TaskTrakr</string>
+    <string name="tasks">Tareas</string>
+    <string name="Categories">Categorías</string>
+    <string name="settings">Ajustes</string>
+</resources>
