@@ -4,4 +4,11 @@
     <string name="tasks">Tareas</string>
     <string name="Categories">Categorías</string>
     <string name="settings">Ajustes</string>
+    <string name="default_reminder">Recordatorio por defecto</string>
+    <string name="notifications">Notitifaciones</string>
+    <string name="completed_tasks">Tareas realizadas</string>
+    <string name="rate_us">Calificanos</string>
+    <string name="privacy_policies">Politicas de privacidad</string>
+    <string name="bug_report">Reportar errores</string>
+    <string name="share">Compartir</string>
 </resources>
