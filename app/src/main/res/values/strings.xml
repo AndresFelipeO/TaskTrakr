@@ -3,4 +3,5 @@
     <string name="tasks">tasks</string>
     <string name="Categories">Categories</string>
     <string name="settings">settings</string>
+    <string name="today">Today</string>
 </resources>
