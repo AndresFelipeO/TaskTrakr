@@ -10,4 +10,13 @@
     <string name="privacy_policies">Privacy policies</string>
     <string name="bug_report">Bug report</string>
     <string name="share">Share</string>
+    <string name="new_task">New task</string>
+    <string name="title">Title</string>
+    <string name="category">Category</string>
+    <string name="location">Location</string>
+    <string name="reminder">Reminder</string>
+    <string name="date">Date</string>
+    <string name="hour">Hour</string>
+    <string name="add">Add</string>
+    <string name="save">Save</string>
 </resources>

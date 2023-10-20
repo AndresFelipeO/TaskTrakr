@@ -11,4 +11,13 @@
     <string name="privacy_policies">Politicas de privacidad</string>
     <string name="bug_report">Reportar errores</string>
     <string name="share">Compartir</string>
+    <string name="new_task">Nueva Tarea</string>
+    <string name="title">Títulko</string>
+    <string name="category">Categoría</string>
+    <string name="location">Lugar</string>
+    <string name="reminder">Recordatorios</string>
+    <string name="date">Fecha</string>
+    <string name="hour">Hour</string>
+    <string name="add">Añadir</string>
+    <string name="save">Guardar</string>
 </resources>

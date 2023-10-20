@@ -34,8 +34,8 @@ data class SettingItem(val text: String, val icon: Int)
 
 @Composable
 fun Settings(){
-    Column (
-        modifier = Modifier.fillMaxSize(),
+    Column (modifier = Modifier.fillMaxSize()
+        .background(color = MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -68,7 +68,7 @@ fun SettingsScreen() {
         // Add more settings items as needed
     )
 
-    LazyColumn {
+    LazyColumn (modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)){
         items(settingsList) { item ->
             SettingItemRow(item)
         }
@@ -96,7 +96,7 @@ fun SettingItemRow(item: SettingItem) {
     ) {
         Text(
             text = item.text,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyLarge
         )
 
         Spacer(modifier = Modifier.width(16.dp))
