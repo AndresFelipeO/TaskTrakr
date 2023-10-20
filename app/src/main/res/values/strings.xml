@@ -3,5 +3,11 @@
     <string name="tasks">tasks</string>
     <string name="Categories">Categories</string>
     <string name="settings">settings</string>
-    <string name="today">Today</string>
+    <string name="default_reminder">Default reminder</string>
+    <string name="notifications">Notifications</string>
+    <string name="completed_tasks">Completed tasks</string>
+    <string name="rate_us">Rate us</string>
+    <string name="privacy_policies">Privacy policies</string>
+    <string name="bug_report">Bug report</string>
+    <string name="share">Share</string>
 </resources>
