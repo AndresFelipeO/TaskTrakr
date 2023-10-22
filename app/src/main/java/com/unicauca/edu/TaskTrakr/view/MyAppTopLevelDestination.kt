@@ -31,15 +31,16 @@ val TOP_LEVEL_DESTINATION= listOf(
    MyAppTopLevelDestination( route=MyAppRoute.TASK,
        selectedIcon= Icons.Default.DateRange,
        iconTextId= R.string.tasks),
-    MyAppTopLevelDestination( route=MyAppRoute.CATEGORY,
+    MyAppTopLevelDestination( route=MyAppRoute.NEWTASK,
         selectedIcon= Icons.Default.Edit,
-        iconTextId= R.string.Categories),
+        iconTextId= R.string.new_task),
     MyAppTopLevelDestination( route=MyAppRoute.SETTINGS,
         selectedIcon= Icons.Default.Settings,
         iconTextId= R.string.settings)
 )
 
 object MyAppRoute{
+    const val NEWTASK="NewTask"
     const val TASK="Task"
     const val CATEGORY="Category"
     const val SETTINGS="Settings"

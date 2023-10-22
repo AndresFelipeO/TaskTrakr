@@ -1,8 +1,10 @@
 package com.unicauca.edu.TaskTrakr
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,10 +31,12 @@ import com.unicauca.edu.TaskTrakr.view.MyAppRoute
 import com.unicauca.edu.TaskTrakr.view.MyAppTopLevelDestination
 import com.unicauca.edu.TaskTrakr.view.TOP_LEVEL_DESTINATION
 import com.unicauca.edu.TaskTrakr.view.screens.Category
+import com.unicauca.edu.TaskTrakr.view.screens.NewTask
 import com.unicauca.edu.TaskTrakr.view.screens.Settings
 import com.unicauca.edu.TaskTrakr.view.screens.Task
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -80,6 +84,7 @@ fun MainScreen(
    }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MyAppContent(
     modifier: Modifier=Modifier,
@@ -102,6 +107,9 @@ fun MyAppContent(
                 }
                 composable(MyAppRoute.SETTINGS){
                     Settings()
+                }
+                composable(MyAppRoute.NEWTASK){
+                    NewTask()
                 }
             }
             MainScreen(selectDestination=selectDestination,

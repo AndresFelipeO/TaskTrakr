@@ -19,4 +19,5 @@
     <string name="hour">Hour</string>
     <string name="add">Add</string>
     <string name="save">Save</string>
+    <string name="today">Today</string>
 </resources>
