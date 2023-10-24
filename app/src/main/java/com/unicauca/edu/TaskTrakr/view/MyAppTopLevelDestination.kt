@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -33,6 +34,9 @@ val TOP_LEVEL_DESTINATION= listOf(
        iconTextId= R.string.tasks),
     MyAppTopLevelDestination( route=MyAppRoute.NEWTASK,
         selectedIcon= Icons.Default.Edit,
+        iconTextId= R.string.new_task),
+    MyAppTopLevelDestination( route=MyAppRoute.CATEGORY,
+        selectedIcon= Icons.Default.List,
         iconTextId= R.string.new_task),
     MyAppTopLevelDestination( route=MyAppRoute.SETTINGS,
         selectedIcon= Icons.Default.Settings,
