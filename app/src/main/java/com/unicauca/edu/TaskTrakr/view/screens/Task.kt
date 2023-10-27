@@ -41,14 +41,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.ViewCompat
+import androidx.navigation.NavController
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview(showSystemUi = true)
 @Composable
-fun Task(){
+fun Task(navController: NavController){
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
     var text by remember { mutableStateOf(selectedDate.timeInMillis.toString()) }
 
@@ -78,7 +78,9 @@ fun Task(){
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(15.dp),
+                .padding(15.dp).clickable {
+                    navController.navigate("viewTask")
+                },
         ) {
             Column (modifier = Modifier.padding(horizontal = 12.dp, vertical = 15.dp)){
                 Text(text = "Parcial Móvil",

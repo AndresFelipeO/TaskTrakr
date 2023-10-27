@@ -44,6 +44,7 @@ val TOP_LEVEL_DESTINATION= listOf(
 )
 
 object MyAppRoute{
+    const val VIEWTASK="viewTask"
     const val NEWTASK="NewTask"
     const val TASK="Task"
     const val CATEGORY="Category"

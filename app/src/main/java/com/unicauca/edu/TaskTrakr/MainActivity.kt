@@ -34,6 +34,7 @@ import com.unicauca.edu.TaskTrakr.view.screens.Category
 import com.unicauca.edu.TaskTrakr.view.screens.NewTask
 import com.unicauca.edu.TaskTrakr.view.screens.Settings
 import com.unicauca.edu.TaskTrakr.view.screens.Task
+import com.unicauca.edu.TaskTrakr.view.screens.ViewTask
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -100,7 +101,10 @@ fun MyAppContent(
                 startDestination = MyAppRoute.TASK,
             ){
                 composable(MyAppRoute.TASK){
-                    Task()
+                    Task(navController)
+                }
+                composable(MyAppRoute.NEWTASK){
+                    NewTask()
                 }
                 composable(MyAppRoute.CATEGORY){
                     Category()
@@ -108,9 +112,10 @@ fun MyAppContent(
                 composable(MyAppRoute.SETTINGS){
                     Settings()
                 }
-                composable(MyAppRoute.NEWTASK){
-                    NewTask()
+                composable(MyAppRoute.VIEWTASK){
+                    ViewTask(navController)
                 }
+
             }
             MainScreen(selectDestination=selectDestination,
                 navigateTopLevelDestination=navigateTopLevelDestination)
