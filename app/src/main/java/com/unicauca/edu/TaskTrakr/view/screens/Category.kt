@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,46 +51,56 @@ import com.unicauca.edu.TaskTrakr.R
 data class taskItemObject(val title:String, val date:String, val hour:String)
 data class categoryItemObject(val title:String, val tasks:List<taskItemObject>)
 
-
 @Composable
-fun Category(){
-    val taskListObject=listOf(
-        taskItemObject("Parcial Movil","28/08/23","2:00pm"),
-        taskItemObject("Parcial Redes","28/08/23","12:00pm"),
-        taskItemObject("Entrega Software","28/08/23","2:00pm"),
-        taskItemObject("Parcial Apliweb","28/08/23","12:00pm")
+fun Category() {
+    val taskListObject = listOf(
+        taskItemObject("Parcial Movil", "28/08/23", "2:00pm"),
+        taskItemObject("Parcial Redes", "28/08/23", "12:00pm"),
+        taskItemObject("Entrega Software", "28/08/23", "2:00pm"),
+        taskItemObject("Parcial Apliweb", "28/08/23", "12:00pm")
     )
 
-    Column (modifier = Modifier
-        .padding(20.dp)
-        .background(MaterialTheme.colorScheme.background)
-        .verticalScroll(state = rememberScrollState(), enabled = true)
+    Column(
+        modifier = Modifier
+            .padding(20.dp)
+            .background(MaterialTheme.colorScheme.background)
+
     ) {
-        Text(stringResource(id = R.string.category),style = MaterialTheme.typography.headlineLarge)
+        Text(stringResource(id = R.string.category), style = MaterialTheme.typography.headlineLarge)
         TaskList(taskListObject)
     }
 }
 
 @Composable
 fun TaskList(tasks: List<taskItemObject>) {
-    Column (modifier = Modifier
-        .padding(10.dp)
-        .background(MaterialTheme.colorScheme.background)
+    Column(
+        modifier = Modifier
+            .padding(10.dp)
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(10.dp)){
+                .padding(10.dp)
+        ) {
             Box(
                 modifier = Modifier
                     .size(30.dp)
                     .background(Color.Magenta, shape = CircleShape)
-                    .clickable {}
-
+                    .clickable { /* Acción de clic aquí */ }
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text("Universidad", style = MaterialTheme.typography.headlineSmall)
         }
-        TaskGrid(tasks = tasks)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .border(1.dp, Color.Gray, RoundedCornerShape(16.dp))
+        ) {
+            items(tasks) { item ->
+                TaskItem(item)
+            }
+        }
     }
 }
 
