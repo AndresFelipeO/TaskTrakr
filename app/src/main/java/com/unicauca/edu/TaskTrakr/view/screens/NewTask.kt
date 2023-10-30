@@ -29,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,25 +41,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.unicauca.edu.TaskTrakr.R
+import com.unicauca.edu.TaskTrakr.view.Classes.clsTask
+import java.util.Date
 
 data class colorItemObject(val text: String, val color: Color)
-data class dayItemObject(val day: String, val num: String)
+data class dayItemObject(val month: String, val num: String)
 
 data class hourItemObject(val hour: String, val mins: String)
+
+var date: String=""
+var time: String=""
+var title: String=""
+var details: String=""
+var location: String=""
+var category: String=""
 
 @Composable
 fun NewTask(){
     Column(modifier = Modifier
         .padding(20.dp)
         .background(MaterialTheme.colorScheme.background)
-        .verticalScroll(state = rememberScrollState(),enabled = true)){
+        .verticalScroll(state = rememberScrollState(), enabled = true)){
         Text(stringResource(id = R.string.new_task),style = MaterialTheme.typography.headlineLarge)
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(stringResource(id = R.string.title),style = MaterialTheme.typography.headlineSmall)
         BasicTextField(
             value = "Nombre...",
-            onValueChange = {},
+            onValueChange = {title=it},
             textStyle = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,7 +87,7 @@ fun NewTask(){
         Text(stringResource(id = R.string.location),style = MaterialTheme.typography.headlineSmall)
         BasicTextField(
             value = "Edificio...",
-            onValueChange = {},
+            onValueChange = {location=it},
             textStyle = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .fillMaxWidth()
@@ -92,7 +103,7 @@ fun NewTask(){
         Text(stringResource(id = R.string.reminder),style = MaterialTheme.typography.headlineSmall)
         BasicTextField(
             value = "Documentos, Tareas, etc...",
-            onValueChange = {},
+            onValueChange = {details=it},
             textStyle = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .fillMaxWidth()
@@ -105,18 +116,58 @@ fun NewTask(){
         )
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(stringResource(id = R.string.date),style = MaterialTheme.typography.headlineSmall)
+        Row(modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(10.dp), verticalAlignment = Alignment.CenterVertically){
+            Text(stringResource(id = R.string.date),style = MaterialTheme.typography.headlineSmall)
+            Button(
+                onClick = { /* Guardar una nueva fecha en la lista de fechas */ },
+                shape = CircleShape,
+                modifier = Modifier.padding(5.dp)) {
+                Text(
+                    text = "+",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White // Cambia el color de texto según tus preferencias
+                )
+            }
+        }
         dayList()
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(stringResource(id = R.string.hour),style = MaterialTheme.typography.headlineSmall)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start, modifier = Modifier.padding(10.dp)){
+            Text(stringResource(id = R.string.hour),style = MaterialTheme.typography.headlineSmall)
+            Button(
+                onClick = { /* Agregar una nueva hora a lista de horas */ },
+                shape = CircleShape,
+                modifier = Modifier.padding(5.dp)) {
+                Text(
+                    text = "+",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White
+                )
+            }
+        }
         hourList()
 
-        Button(onClick = {}) {
-            Text(text = stringResource(id = R.string.save),style = MaterialTheme.typography.bodyMedium)
+        Row() {
+            Button(onClick = {
+                clsTask(
+                    "21/OCT/2023",
+                    "21:56",
+                    title,
+                    details,
+                    location,
+                    category
+                )//Guardar la tarea y volver a la pantalla de inicio
+            }) {
+                Text(
+                    text = stringResource(id = R.string.save),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
+        Spacer(modifier = Modifier.height(70.dp))
     }
 }
+
 
 @Composable
 fun colorItem(item:colorItemObject){
@@ -130,7 +181,7 @@ fun colorItem(item:colorItemObject){
             modifier = Modifier
                 .size(40.dp)
                 .background(item.color, shape = CircleShape)
-                .clickable {}
+                .clickable { category = item.text }
         ){}
         Spacer(modifier = Modifier.width(16.dp))
         Text(
@@ -169,7 +220,6 @@ fun dayItem(item:dayItemObject){
                 color = Color.LightGray,
                 shape = RoundedCornerShape(16.dp)
             )
-            .clickable {}
     ){
         Column(modifier = Modifier
             .width(60.dp)
@@ -178,7 +228,7 @@ fun dayItem(item:dayItemObject){
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally){
             Text(
-                text = item.day,
+                text = item.month,
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.width(16.dp))
@@ -193,11 +243,10 @@ fun dayItem(item:dayItemObject){
 @Composable
 fun dayList(){
     val dayListObject = listOf(
-        dayItemObject("DOM","10"),
-        dayItemObject("TUE","18"),
-        dayItemObject("MON","20"),
-        dayItemObject("SAT","25"),
-        dayItemObject("","+")
+        dayItemObject("NOV","10"),
+        dayItemObject("NOV","18"),
+        dayItemObject("NOV","20"),
+        dayItemObject("NOV","25"),
     )
 
     LazyRow (modifier = Modifier
@@ -221,7 +270,6 @@ fun hourItem(item:hourItemObject){
                 color = Color.LightGray,
                 shape = RoundedCornerShape(16.dp)
             )
-            .clickable {}
     ){
         Row(modifier = Modifier
             .width(60.dp)
@@ -246,8 +294,7 @@ fun hourList(){
     val hourListObject = listOf(
         hourItemObject("21:","00"),
         hourItemObject("9:","15"),
-        hourItemObject("13:","30"),
-        hourItemObject("+","")
+        hourItemObject("13:","30")
     )
 
     LazyRow (modifier = Modifier

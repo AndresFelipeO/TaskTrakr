@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,6 +46,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
+import com.unicauca.edu.TaskTrakr.view.Classes.clsTask
 import com.unicauca.edu.TaskTrakr.view.MyAppNavigationActions
 import com.unicauca.edu.TaskTrakr.view.MyAppRoute
 import com.unicauca.edu.TaskTrakr.view.MyAppTopLevelDestination
@@ -56,10 +58,16 @@ import com.unicauca.edu.TaskTrakr.view.screens.Task
 import com.unicauca.edu.TaskTrakr.view.screens.ViewTask
 
 class MainActivity : ComponentActivity() {
+
+    val taskList = mutableStateOf(mutableListOf<clsTask>())
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        taskList.value.add(clsTask("21/08/2023","14:30","Parcial estadistica","Llevar pc","FIET 203","Universidad"))
+
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {

@@ -42,15 +42,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.ViewCompat
 import androidx.navigation.NavController
+import com.unicauca.edu.TaskTrakr.view.Classes.clsTask
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Task(navController: NavController){
+fun Task(navController: NavController, tasks: MutableList<clsTask>){
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
     var text by remember { mutableStateOf(selectedDate.timeInMillis.toString()) }
+    var tasksState by remember { mutableStateOf(tasks) }
 
     Column (
         modifier = Modifier
