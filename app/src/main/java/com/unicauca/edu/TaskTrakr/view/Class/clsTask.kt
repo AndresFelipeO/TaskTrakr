@@ -1,4 +1,4 @@
-package com.unicauca.edu.TaskTrakr.view.Classes
+package com.unicauca.edu.TaskTrakr.view.Class
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -8,18 +8,20 @@ import androidx.lifecycle.ViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class clsTask (date: String,
-               time: String,
-               title: String,
-               details: String,
-               location: String,
-               category: String): ViewModel(){
+class clsTask(
+    initialDate: String,
+    initialTime: String,
+    initialTitle: String,
+    initialDetails: String,
+    initialLocation: String,
+    initialCategory: String
+) : ViewModel() {
     private var date: MutableState<Date> = mutableStateOf(Date())
-    private var time: String by mutableStateOf("")
-    private var title: String by mutableStateOf("")
-    private var details: String by mutableStateOf("")
-    private var location: String by mutableStateOf("")
-    private var category: String by mutableStateOf("")
+    private var time: String by mutableStateOf(initialTime)
+    private var title: String by mutableStateOf(initialTitle)
+    private var details: String by mutableStateOf(initialDetails)
+    private var location: String by mutableStateOf(initialLocation)
+    private var category: String by mutableStateOf(initialCategory)
 
     fun getDateAsString(): String {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy")
@@ -47,40 +49,40 @@ class clsTask (date: String,
     }
 
 
-    fun setTime(timeString: String) {
-        // Add validation for time format if needed
+    fun setTimeValue(timeString: String) {
         time = timeString
     }
 
-    fun getTitle(): String {
+    fun getTitleValue(): String {
         return title
     }
 
-    fun setTitle(title: String) {
+    fun setTitleValue(title: String) {
         this.title = title
     }
 
-    fun getDetails(): String {
+    fun getDetailsValue(): String {
         return details
     }
 
-    fun setDetails(details: String) {
+    fun setDetailsValue(details: String) {
         this.details = details
     }
 
-    fun getLocation(): String {
+    fun getLocationValue(): String {
         return location
     }
 
-    fun setLocation(location: String) {
+    fun setLocationValue(location: String) {
         this.location = location
     }
 
-    fun getCategory(): String {
+    fun getCategoryValue(): String {
         return category
     }
 
-    fun setCategory(category: String) {
+    fun setCategoryValue(category: String) {
         this.category = category
     }
+
 }

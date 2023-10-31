@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -18,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unicauca.edu.TaskTrakr.R
@@ -42,14 +40,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.ViewCompat
 import androidx.navigation.NavController
-import com.unicauca.edu.TaskTrakr.view.Classes.clsTask
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Task(navController: NavController, tasks: MutableList<clsTask>){
+fun Task(navController: NavController, tasks: () -> Unit){
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
     var text by remember { mutableStateOf(selectedDate.timeInMillis.toString()) }
     var tasksState by remember { mutableStateOf(tasks) }
@@ -170,14 +167,13 @@ fun SimpleCalendar() {
                 .padding(16.dp, 0.dp)
                 ) {
             LazyVerticalGrid(columns = GridCells.Fixed(7), modifier = Modifier
-                .height(200.dp)
+                .height(230.dp)
                 .padding(0.dp, 8.dp)
             ) {
                 val emptyCells = List(firstDayOfWeek - 1) { null }
                 val daysInMonth = firstDayOfMonth.lengthOfMonth()
                 items(emptyCells.size + daysInMonth + 2) { dayOfMonth ->
                     val day = dayOfMonth - emptyCells.size + 1
-                    val textColor = Color.Black
 
                     var backgroundColor = Color.Transparent
 
@@ -206,7 +202,6 @@ fun SimpleCalendar() {
                                 Text(
                                     text = if (day <= 0 || day > daysInMonth) " " else day.toString(),
                                     textAlign = TextAlign.Center,
-                                    color = textColor,
                                     modifier = Modifier
                                         .background(backgroundColor)
                                         .width(32.dp)
@@ -225,7 +220,6 @@ fun SimpleCalendar() {
                             Text(
                                 text = if (day <= 0 || day > daysInMonth) " " else day.toString(),
                                 textAlign = TextAlign.Center,
-                                color = textColor,
                                 modifier = Modifier
                                     .background(backgroundColor)
                                     .width(32.dp)

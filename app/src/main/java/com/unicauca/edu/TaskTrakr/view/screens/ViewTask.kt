@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,12 +35,19 @@ import androidx.navigation.NavController
 import com.unicauca.edu.TaskTrakr.R
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewTask(navController: NavController){
     Scaffold(
         Modifier.fillMaxSize(),
+        bottomBar = {
+            // No agregues ningún elemento en el BottomAppBar
+            BottomAppBar(
+                modifier = Modifier.height(0.dp),
+
+            ) {}
+        },
 
         topBar = {
             TopAppBar(
@@ -83,63 +92,64 @@ fun ViewTask(navController: NavController){
                 }
             )
         },
-    )
-    {
-        Column(
-            modifier = Modifier
-                .padding(top = 55.dp, start = 30.dp, end = 30.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-          Row {
-              Text(
-                  modifier = Modifier.padding(8.dp),
-                  text = "Salon 334",
-                  color = Color.Gray,
-                  fontSize = 15.sp
-
-
-              )
-              Text(
-                  modifier = Modifier.padding(8.dp),
-                  text = "#Universidad",
-                  color = Color.Gray,
-                  fontSize = 15.sp
-              )
-          }
-          Row(
-              Modifier.fillMaxWidth(),
-              verticalAlignment = Alignment.CenterVertically
-          ){
-              Text(
-                  modifier = Modifier.padding(8.dp),
-                  text = "Parcial de diseño en android\n" +
-                          "- Calidad de la app\n" +
-                          "- monetizar\n" +
-                          "- principios de diseño",
-                  fontSize = 18.sp
-              )
-              Text(text = "4:00 pm ")
-              Icon(
-                  painter = painterResource(R.drawable.clock_icon),
-                  contentDescription = "Clock",
-              )
-          }
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+        content = {
+            Column(
+                modifier = Modifier
+                    .padding(top = 55.dp, start = 30.dp, end = 30.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Calendar",
-                    tint = Color.Gray
-                )
-                Text(
-                    modifier = Modifier.padding(8.dp),
-                    text = "Hoy",
-                    color = Color.Gray,
-                    fontSize = 15.sp
-                )
+                Row {
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = "Salon 334",
+                        color = Color.Gray,
+                        fontSize = 15.sp
+
+
+                    )
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = "#Universidad",
+                        color = Color.Gray,
+                        fontSize = 15.sp
+                    )
+                }
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = "Parcial de diseño en android\n" +
+                                "- Calidad de la app\n" +
+                                "- monetizar\n" +
+                                "- principios de diseño",
+                        fontSize = 18.sp
+                    )
+                    Text(text = "4:00 pm ")
+                    Icon(
+                        painter = painterResource(R.drawable.clock_icon),
+                        contentDescription = "Clock",
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Calendar",
+                        tint = Color.Gray
+                    )
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = "Hoy",
+                        color = Color.Gray,
+                        fontSize = 15.sp
+                    )
+                }
+                Divider(color = Color.Gray, thickness = 1.dp)
             }
-            Divider(color = Color.Gray, thickness = 1.dp)
-        }
-    }
+        },
+    )
+
 }
