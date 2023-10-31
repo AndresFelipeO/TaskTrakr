@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,31 +28,26 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import com.unicauca.edu.TaskTrakr.R
+import java.nio.file.WatchEvent
 
 data class SettingItem(val text: String, val icon: Int)
 
 @Composable
 fun Settings(){
-    Column (modifier = Modifier.fillMaxSize()
-        .background(color = MaterialTheme.colorScheme.background),
+    Column (modifier = Modifier
+        .fillMaxSize()
+        .background(color = MaterialTheme.colorScheme.background).padding(all = 15.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically){
-            Icon(
-                painter = painterResource(R.drawable.settings_icon),
-                contentDescription = "SettingsIcon",
-                modifier = Modifier.size(48.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text = stringResource(id = R.string.settings),style=MaterialTheme.typography.headlineLarge)
-        }
-        Spacer(modifier = Modifier.width(30.dp))
+        Text(text = stringResource(id = R.string.settings),style=MaterialTheme.typography.headlineLarge,
+            fontSize =35.sp, fontWeight = FontWeight.Bold )
+        Spacer(modifier = Modifier.height(10.dp))
         SettingsScreen()
     }
 }
@@ -67,22 +64,28 @@ fun SettingsScreen() {
         SettingItem(stringResource(id = R.string.share), R.drawable.share_icon)
         // Add more settings items as needed
     )
-
-    LazyColumn (modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)){
-        items(settingsList) { item ->
-            SettingItemRow(item)
+    Card {
+        LazyColumn (modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)){
+            items(settingsList) { item ->
+                SettingItemRow(item)
+            }
         }
     }
+
 }
 
 
 @Composable
 fun SettingItemRow(item: SettingItem) {
-    Divider(modifier = Modifier.fillMaxWidth().padding(16.dp), thickness = 1.dp, color = Color.Gray)
+    Divider(modifier = Modifier
+        .fillMaxWidth()
+        .padding(all = 10.dp), thickness = 1.dp, color = Color.Gray)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 15.dp)
             .clickable(onClick = {
                 // Handle item click
             })
@@ -90,17 +93,14 @@ fun SettingItemRow(item: SettingItem) {
                 color = MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.large
             )
-            .padding(16.dp),
+            .padding(1.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = item.text,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
         )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
         Icon(
             painter = painterResource(item.icon),
             contentDescription = "Icono"
