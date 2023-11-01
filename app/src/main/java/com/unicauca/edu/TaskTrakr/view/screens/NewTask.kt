@@ -1,8 +1,10 @@
 package com.unicauca.edu.TaskTrakr.view.screens
 
 import android.annotation.SuppressLint
-import android.provider.CalendarContract.Colors
-import android.widget.RadioGroup
+import android.os.Build
+import android.util.Log
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,7 +20,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -31,24 +32,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -56,39 +56,60 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.unicauca.edu.TaskTrakr.R
+import com.unicauca.edu.TaskTrakr.controller.ClsCategory
+import com.unicauca.edu.TaskTrakr.controller.ClsTask
+import com.unicauca.edu.TaskTrakr.model.AppDatabase
 import com.unicauca.edu.TaskTrakr.view.Class.CalendarDataSource
 import com.unicauca.edu.TaskTrakr.view.Class.CalendarUiModel
-import com.unicauca.edu.TaskTrakr.view.Class.clsTask
-import kotlinx.coroutines.selects.select
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Calendar
-import java.util.Locale
 
 data class colorItemObject(val text: String, val color: Color)
-data class dayItemObject(val month: String, val num: String)
-
-data class hourItemObject(val hour: String, val mins: String)
 
 var date: String=""
 var time: String=""
 var category: String=""
 
-@Preview
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NewTask(navController: NavController){
+    //variables mutables
     var title by remember { mutableStateOf("Nombre...") }
     var location by remember { mutableStateOf("Edificio...") }
     var details by remember { mutableStateOf("Documents...") }
+    var hours by remember { mutableStateOf("1") }
+    var minutes by remember { mutableStateOf("0") }
+    //-------------------------
+    val dataSource = CalendarDataSource()
+    // we use `mutableStateOf` and `remember` inside composable function to schedules recomposition
+    var calendarUiModel by remember { mutableStateOf(dataSource.getData(lastSelectedDate = dataSource.today)) }
+
+
+    var isAM by remember { mutableStateOf(true) }
+
+    //bases de datos
+    val context = LocalContext.current
+    val categoryDao = AppDatabase.getInstance(context).categoryDao()
+
+    var selectedCategoryId by remember { mutableStateOf(1) } // Inicialmente no hay categoría seleccionada
+
+    val categories by produceState<List<ClsCategory>?>(initialValue = null) {
+        try {
+            val result: List<ClsCategory> = withContext(Dispatchers.IO) {
+                categoryDao.getAllCategorias()
+            }
+            value = result
+        } catch (e: Exception) {
+            Log.e("Database", "Error al acceder a la base de datos: ${e.message}")
+        }
+    }
 
 
     Column(modifier = Modifier
@@ -134,7 +155,9 @@ fun NewTask(navController: NavController){
         Spacer(modifier = Modifier.height(10.dp))
         Text(stringResource(id = R.string.category),
             style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        colorList()
+        colorList(categories ?: emptyList()) { categoryId ->
+            selectedCategoryId = categoryId // Manejar la selección de categoría
+        }
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(stringResource(id = R.string.location),style = MaterialTheme.typography.headlineSmall,
@@ -172,14 +195,36 @@ fun NewTask(navController: NavController){
         Spacer(modifier = Modifier.height(10.dp))
         Text(stringResource(id = R.string.date),style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold)
-        CalendarApp()
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            Header(
+                data = calendarUiModel,
+                onPrevClickListener = { startDate ->
+                    val finalStartDate = startDate.minusDays(1)
+                    calendarUiModel = dataSource.getData(startDate = finalStartDate, lastSelectedDate = calendarUiModel.selectedDate.date)
+                },
+                onNextClickListener = { endDate ->
+                    val finalStartDate = endDate.plusDays(2)
+                    calendarUiModel = dataSource.getData(startDate = finalStartDate, lastSelectedDate = calendarUiModel.selectedDate.date)
+                }
+            )
+            Content(data = calendarUiModel, onDateClickListener = { date ->
+                calendarUiModel = calendarUiModel.copy(
+                    selectedDate = date,
+                    visibleDates = calendarUiModel.visibleDates.map {
+                        it.copy(
+                            isSelected = it.date.isEqual(date.date)
+                        )
+                    }
+                )
+            })
+        }
+
+        //------------------
         Spacer(modifier = Modifier.height(10.dp))
         Text(stringResource(id = R.string.hour),style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold)
-        var hours by remember { mutableStateOf("1") }
-        var minutes by remember { mutableStateOf("0") }
 
-        var isAM by remember { mutableStateOf(true) }
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -231,20 +276,39 @@ fun NewTask(navController: NavController){
             Spacer(modifier = Modifier.height(16.dp))
         }
         Button(onClick = {
-            clsTask(
-                "21/OCT/2023",
-                "21:56",
-                title,
-                details,
-                location,
-                category
-            )//Guardar la tarea y volver a la pantalla de inicio
+            // Obtener los valores ingresados por el usuario
+            val taskTitle = title
+            val taskLocation = location
+            val taskDetails = details
+
+            // Formatear la fecha y hora seleccionadas
+
+            // Crear una instancia de ClsCategory si la categoría está seleccionada
+
+            if (taskTitle.isNotBlank() && taskLocation.isNotBlank() && taskDetails.isNotBlank()) {
+                // Crear una instancia de ClsTask y guardarla en la base de datos
+                val newTask = ClsTask(
+                    title = taskTitle,
+                    location = taskLocation,
+                    reminder = taskDetails,
+                    hour = "$hours:$minutes $isAM",
+                    date =  calendarUiModel.selectedDate.date.format(
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+                    ),
+                    categoryId = selectedCategoryId
+                )
+
+                // Insertar la tarea en la base de datos
+                AppDatabase.getInstance(context).taskDao().insertTask(newTask)
+                Toast.makeText(context, "Tarea agregada con éxito", Toast.LENGTH_SHORT).show()
+            } else {
+                // Manejar la validación de datos si algún campo está vacío, por ejemplo, mostrar un mensaje de error
+                Toast.makeText(context, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
+            }
         }) {
-            Text(
-                text = stringResource(id = R.string.save),
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Text(text = stringResource(id = R.string.save), style = MaterialTheme.typography.bodyMedium)
         }
+
         Spacer(modifier = Modifier.height(70.dp))
 
     }
@@ -274,82 +338,52 @@ fun String.isNumeric(): Boolean {
 }
 
 @Composable
-fun colorItem(item:colorItemObject){
-    Column(modifier = Modifier
-        .width(80.dp)
-        .height(60.dp)
-        .background(color = MaterialTheme.colorScheme.background),
+fun colorItem(item: ClsCategory, onCategorySelected: (Int) -> Unit) {
+    Column(
+        modifier = Modifier
+            .width(80.dp)
+            .height(60.dp)
+            ,
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally){
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Box(
             modifier = Modifier
                 .size(25.dp)
-                .background(item.color, shape = CircleShape)
-                .clickable { category = item.text }
-        ){}
+                .background( color = if (item.isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary)
+                .clickable {
+                    // Cambiar el estado de selección cuando se hace clic en el elemento
+                    onCategorySelected(item.categoryId)
+                    println(item.categoryId)
+                }
+        ) {}
 
         Text(
-            text = item.text,
+            text = item.name,
             style = MaterialTheme.typography.bodyMedium,
-
         )
     }
 }
 
 
 @Composable
-fun colorList(){
-    val coloListObject = listOf(
-        colorItemObject("Trabajo",Color.Red),
-        colorItemObject("Universidad",Color.Magenta),
-        colorItemObject("Tareas",Color.Cyan),
-        colorItemObject("Casa",Color.LightGray)
-    )
-
-    LazyRow (modifier = Modifier
-        .fillMaxWidth()
-        .background(MaterialTheme.colorScheme.background)
-        .height(80.dp)
-        .padding(10.dp)){
-        items(coloListObject) { item ->
-            colorItem(item)
+fun colorList(categories: List<ClsCategory>, onCategorySelected: (Int) -> Unit) {
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .height(80.dp)
+            .padding(10.dp)
+    ) {
+        items(categories) { item ->
+            colorItem(item, onCategorySelected)
         }
     }
 }
 
 //------------------------------------------------------------
 
-@SuppressLint("NewApi")
-@Composable
-fun CalendarApp(modifier: Modifier = Modifier) {
-    val dataSource = CalendarDataSource()
-    // we use `mutableStateOf` and `remember` inside composable function to schedules recomposition
-    var calendarUiModel by remember { mutableStateOf(dataSource.getData(lastSelectedDate = dataSource.today)) }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        Header(
-            data = calendarUiModel,
-            onPrevClickListener = { startDate ->
-                val finalStartDate = startDate.minusDays(1)
-                calendarUiModel = dataSource.getData(startDate = finalStartDate, lastSelectedDate = calendarUiModel.selectedDate.date)
-            },
-            onNextClickListener = { endDate ->
-                val finalStartDate = endDate.plusDays(2)
-                calendarUiModel = dataSource.getData(startDate = finalStartDate, lastSelectedDate = calendarUiModel.selectedDate.date)
-            }
-        )
-        Content(data = calendarUiModel, onDateClickListener = { date ->
-            calendarUiModel = calendarUiModel.copy(
-                selectedDate = date,
-                visibleDates = calendarUiModel.visibleDates.map {
-                    it.copy(
-                        isSelected = it.date.isEqual(date.date)
-                    )
-                }
-            )
-        })
-    }
-}
 
 @SuppressLint("NewApi")
 @Composable

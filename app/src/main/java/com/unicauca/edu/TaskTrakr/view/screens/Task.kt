@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.ViewCompat
 import androidx.navigation.NavController
+import com.unicauca.edu.TaskTrakr.model.AppDatabase
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.util.Calendar
@@ -74,6 +75,10 @@ fun Task(navController: NavController, tasks: () -> Unit){
             fontWeight = FontWeight.Bold,
 
         )
+
+
+
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
