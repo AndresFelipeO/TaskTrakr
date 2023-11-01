@@ -1,16 +1,21 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id ("kotlin-kapt")
+    id("com.google.dagger.hilt.android") version "2.47" apply false
+    id("com.google.devtools.ksp") version "1.9.0-1.0.11" apply false
 }
 
 android {
     namespace = "com.unicauca.edu.TaskTrakr"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.unicauca.edu.TaskTrakr"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -30,11 +35,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -50,6 +55,18 @@ android {
 }
 
 dependencies {
+
+    val room_version = "2.6.0"
+
+    implementation ("androidx.room:room-runtime:$room_version")
+    annotationProcessor ("androidx.room:room-compiler:$room_version")
+    // To use Kotlin annotation processing tool (kapt)
+    kapt ("androidx.room:room-compiler:$room_version")
+    // To use Kotlin Symbol Processing (KSP)
+   //ksp ("androidx.room:room-compiler:$room_version")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+
+
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
@@ -68,3 +85,4 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
 }
+
