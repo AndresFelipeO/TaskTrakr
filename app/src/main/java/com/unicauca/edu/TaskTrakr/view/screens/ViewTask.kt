@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -111,12 +112,13 @@ fun ViewTask(navController: NavController,taskId: Int){
                        IconButton(
                            onClick = {
                                // Navega hacia atrás en la navegación de la aplicación
+                               taskdb?.let { taskDao.deleteTask(it) }
                                navController.popBackStack()
                            }
                        ) {
                            Icon(
-                               imageVector = Icons.Default.Create,
-                               contentDescription = "Atrás",Modifier.size(35.dp)
+                               imageVector = Icons.Default.Clear,
+                               contentDescription = "delete",Modifier.size(35.dp)
                            )
                        }
                    }
