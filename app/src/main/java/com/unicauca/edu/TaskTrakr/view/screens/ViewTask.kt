@@ -1,6 +1,7 @@
 package com.unicauca.edu.TaskTrakr.view.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +15,6 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,22 +23,53 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.unicauca.edu.TaskTrakr.R
+import com.unicauca.edu.TaskTrakr.controller.ClsTask
+import com.unicauca.edu.TaskTrakr.model.AppDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ViewTask(navController: NavController){
+fun ViewTask(navController: NavController,taskId: Int){
+
+    val context = LocalContext.current
+    val taskDao = AppDatabase.getInstance(context).taskDao()
+    val taskdb by produceState<ClsTask?>(initialValue = null) {
+        try {
+            val result: ClsTask? = withContext(Dispatchers.IO) {
+                taskDao.getTaskById(taskId)
+            }
+            value = result
+        } catch (e: Exception) {
+            Log.e("Database", "Error al acceder a la base de datos: ${e.message}")
+        }
+    }
+    val catedb by produceState<String?>(initialValue = null) {
+        try {
+            val result: String? = withContext(Dispatchers.IO) {
+                taskDao.getTaskWithCategoryName(taskId)
+            }
+            value = result
+        } catch (e: Exception) {
+            Log.e("Database", "Error al acceder a la base de datos: ${e.message}")
+        }
+    }
     Scaffold(
         Modifier.fillMaxSize(),
         bottomBar = {
@@ -75,7 +106,7 @@ fun ViewTask(navController: NavController){
                                    contentDescription = "Atrás",Modifier.size(30.dp)
                                )
                            }
-                           Text("Parcial Móvil", fontSize =35.sp, fontWeight = FontWeight.Bold )
+                           taskdb?.let { Text(it.title, fontSize =35.sp, fontWeight = FontWeight.Bold ) }
                        }
                        IconButton(
                            onClick = {
@@ -99,38 +130,38 @@ fun ViewTask(navController: NavController){
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Row {
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = "Salon 334",
-                        color = Color.Gray,
-                        fontSize = 15.sp
+                    taskdb?.let { it1 ->
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            text = it1.location,
+                            color = Color.Gray,
+                            fontSize = 15.sp
 
 
-                    )
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = "#Universidad",
-                        color = Color.Gray,
-                        fontSize = 15.sp
-                    )
+                        )
+                    }
+                    catedb?.let { it1 ->
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            text = "#$it1",
+                            color = Color.Gray,
+                            fontSize = 15.sp
+                        )
+                    }
                 }
                 Row(
                     Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
                 ){
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = "Parcial de diseño en android\n" +
-                                "- Calidad de la app\n" +
-                                "- monetizar\n" +
-                                "- principios de diseño",
-                        fontSize = 18.sp
-                    )
-                    Text(text = "4:00 pm ")
-                    Icon(
-                        painter = painterResource(R.drawable.clock_icon),
-                        contentDescription = "Clock",
-                    )
+                    taskdb?.let { it1 ->
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            text = it1.reminder,
+                            fontSize = 18.sp,
+                            overflow = TextOverflow.Clip,
+                        )
+                    }
+
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -140,11 +171,18 @@ fun ViewTask(navController: NavController){
                         contentDescription = "Calendar",
                         tint = Color.Gray
                     )
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = "Hoy",
-                        color = Color.Gray,
-                        fontSize = 15.sp
+                    taskdb?.let { it1 ->
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            text = it1.date,
+                            color = Color.Gray,
+                            fontSize = 15.sp
+                        )
+                    }
+                    taskdb?.let { it1 -> Text(text = it1.hour) }
+                    Icon(
+                        painter = painterResource(R.drawable.clock_icon),
+                        contentDescription = "Clock",
                     )
                 }
                 Divider(color = Color.Gray, thickness = 1.dp)

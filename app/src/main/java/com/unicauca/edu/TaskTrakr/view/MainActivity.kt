@@ -1,4 +1,4 @@
-package com.unicauca.edu.TaskTrakr
+package com.unicauca.edu.TaskTrakr.view
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
@@ -35,15 +34,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
-import com.unicauca.edu.TaskTrakr.view.MyAppNavigationActions
-import com.unicauca.edu.TaskTrakr.view.MyAppRoute
-import com.unicauca.edu.TaskTrakr.view.MyAppTopLevelDestination
-import com.unicauca.edu.TaskTrakr.view.TOP_LEVEL_DESTINATION
+import com.unicauca.edu.TaskTrakr.controller.ClsTask
 import com.unicauca.edu.TaskTrakr.view.screens.Category
 import com.unicauca.edu.TaskTrakr.view.screens.NewTask
 import com.unicauca.edu.TaskTrakr.view.screens.Settings
 import com.unicauca.edu.TaskTrakr.view.screens.Task
 import com.unicauca.edu.TaskTrakr.view.screens.ViewTask
+import com.unicauca.edu.TaskTrakr.view.screens.View
 
 
 class MainActivity : ComponentActivity() {
@@ -87,9 +84,7 @@ class MainActivity : ComponentActivity() {
                             if (selectDestination == MyAppRoute.TASK
                                 || selectDestination == MyAppRoute.CATEGORY
                                 || selectDestination == MyAppRoute.SETTINGS) {
-                            BottomAppBar(
-                                containerColor =   Color.Transparent,
-                            ) {
+                            BottomAppBar{
                                 TOP_LEVEL_DESTINATION.forEach { destinations ->
                                     NavigationBarItem(
                                         colors = androidx.compose.material3.NavigationBarItemDefaults
@@ -153,7 +148,7 @@ fun MyAppContent(
     selectDestination: String,
     navigateTopLevelDestination: (MyAppTopLevelDestination) -> Unit
 ){
-
+    val taskState = remember { mutableStateOf<ClsTask?>(null) }
 
     Row(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -169,14 +164,21 @@ fun MyAppContent(
                     NewTask(navController)
                 }
                 composable(MyAppRoute.CATEGORY){
-                    println("Entro")
-                    Category()
+                    Category(navController)
                 }
                 composable(MyAppRoute.SETTINGS){
-                    Settings()
+                    Settings(navController)
                 }
-                composable(MyAppRoute.VIEWTASK){
-                    ViewTask(navController)
+                composable(MyAppRoute.INFO){
+                    View()
+                }
+                composable(route = "${MyAppRoute.VIEWTASK}/{taskId}") { backStackEntry ->
+                    val taskId = backStackEntry.arguments?.getString("taskId")?.toInt()
+                    if (taskId != null) {
+                        ViewTask(navController, taskId)
+                    } else {
+                        // Manejar el caso en el que no se proporciona un ID válido
+                    }
                 }
 
             }
@@ -184,42 +186,3 @@ fun MyAppContent(
     }
 
 }
-
-/*
-
-                    val userDao = db.userDao()
-                    lifecycleScope.launch {
-                        try {
-                            val newUser = User(uid = 1, firstName = "a", lastName = "b")
-                            // Insertar el nuevo usuario en la base de datos
-                            userDao.insertAll(newUser)
-
-                            // Ahora puedes usar 'newUser' en el hilo principal
-                            // Por ejemplo, puedes mostrar un mensaje de éxito en tu interfaz de usuario aquí
-                            Log.d("Database", "Usuario insertado con éxito")
-                        } catch (e: Exception) {
-                            // En caso de un error, registra un mensaje de error
-                            Log.e("Database", "Error al insertar el usuario: ${e.message}")
-                        }
-                    }
-
-
-
-                    // Utiliza un CoroutineScope para ejecutar la operación en un hilo de fondo
-                    lifecycleScope.launch {
-                        try {
-                            val users: List<User>
-                            // Cambia al contexto de fondo
-                            withContext(Dispatchers.IO) {
-                                users = userDao.getAll()
-                            }
-                            println(users)
-                            // Ahora puedes usar 'users' en el hilo principal
-                            // Por ejemplo, puedes mostrar los datos en tu interfaz de usuario aquí
-                            // Ejemplo: textView.text = users.joinToString { it.userName }
-                        } catch (e: Exception) {
-                            Log.e("Database", "Error al acceder a la base de datos: ${e.message}")
-                        }
-
-
-                    }*/

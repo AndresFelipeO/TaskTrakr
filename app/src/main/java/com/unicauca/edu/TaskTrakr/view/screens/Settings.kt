@@ -10,11 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -24,21 +21,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.unicauca.edu.TaskTrakr.R
-import java.nio.file.WatchEvent
 
-data class SettingItem(val text: String, val icon: Int)
+data class SettingItem(val text: String, val icon: Int, val function: () -> Unit)
 
 @Composable
-fun Settings(){
+fun Settings(navController: NavController){
     Column (modifier = Modifier
         .fillMaxSize()
         .background(color = MaterialTheme.colorScheme.background).padding(all = 15.dp),
@@ -48,20 +43,34 @@ fun Settings(){
         Text(text = stringResource(id = R.string.settings),style=MaterialTheme.typography.headlineLarge,
             fontSize =35.sp, fontWeight = FontWeight.Bold )
         Spacer(modifier = Modifier.height(10.dp))
-        SettingsScreen()
+        SettingsScreen(navController)
     }
 }
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(navController: NavController) {
     val settingsList = listOf(
-        SettingItem(stringResource(id = R.string.default_reminder), R.drawable.clock_icon),
-        SettingItem(stringResource(id = R.string.notifications), R.drawable.notification_icon),
-        SettingItem(stringResource(id = R.string.completed_tasks), R.drawable.checklist_icon),
-        SettingItem(stringResource(id = R.string.rate_us), R.drawable.star_icon),
-        SettingItem(stringResource(id = R.string.privacy_policies), R.drawable.exclamation_icon),
-        SettingItem(stringResource(id = R.string.bug_report), R.drawable.bug_icon),
-        SettingItem(stringResource(id = R.string.share), R.drawable.share_icon)
+        SettingItem(stringResource(id = R.string.default_reminder), R.drawable.clock_icon){
+
+        },
+        SettingItem(stringResource(id = R.string.notifications), R.drawable.notification_icon) {
+
+        },
+        SettingItem(stringResource(id = R.string.completed_tasks), R.drawable.checklist_icon) {
+
+        },
+        SettingItem(stringResource(id = R.string.rate_us), R.drawable.star_icon) {
+
+        },
+        SettingItem(stringResource(id = R.string.privacy_policies), R.drawable.exclamation_icon) {
+            navController.navigate("information")
+        },
+        SettingItem(stringResource(id = R.string.bug_report), R.drawable.bug_icon) {
+
+        },
+        SettingItem(stringResource(id = R.string.share), R.drawable.share_icon) {
+
+        }
         // Add more settings items as needed
     )
     Card {
@@ -86,9 +95,7 @@ fun SettingItemRow(item: SettingItem) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 15.dp)
-            .clickable(onClick = {
-                // Handle item click
-            })
+            .clickable(onClick = item.function)
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.large
@@ -106,16 +113,4 @@ fun SettingItemRow(item: SettingItem) {
             contentDescription = "Icono"
         )
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun PreviewSettingsScreen() {
-    SettingsScreen()
-}
-
-@Composable
-@Preview(showBackground = true)
-fun PreviewSettings() {
-    Settings()
 }

@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -74,7 +75,6 @@ import java.time.format.FormatStyle
 data class colorItemObject(val text: String, val color: Color)
 
 var date: String=""
-var time: String=""
 var category: String=""
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -155,8 +155,9 @@ fun NewTask(navController: NavController){
         Spacer(modifier = Modifier.height(10.dp))
         Text(stringResource(id = R.string.category),
             style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        colorList(categories ?: emptyList()) { categoryId ->
+        colorList( categories = categories ?: emptyList(), id = selectedCategoryId) { categoryId ->
             selectedCategoryId = categoryId // Manejar la selección de categoría
+
         }
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -246,9 +247,15 @@ fun NewTask(navController: NavController){
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     ),
-                    modifier = Modifier.width(64.dp)
-                )
+                    modifier =
+                    Modifier.width(64.dp).height(35.dp).border(
+                        width = 1.dp,
+                        color = Color.LightGray,
+                        shape = RoundedCornerShape(10.dp),
 
+                    )
+                )
+                Spacer(modifier = Modifier.width(10.dp))
                 // BasicTextField para los minutos (de 0 a 59)
                 BasicTextField(
                     value = minutes,
@@ -262,8 +269,14 @@ fun NewTask(navController: NavController){
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     ),
-                    modifier = Modifier.width(64.dp)
+                    modifier = Modifier.width(64.dp).height(35.dp).border(
+                        width = 1.dp,
+                        color = Color.LightGray,
+                        shape = RoundedCornerShape(10.dp),
+
+                        )
                 )
+                Spacer(modifier = Modifier.width(10.dp))
                 TimePeriodButton("AM", isAM) {
                     isAM = true
                 }
@@ -280,10 +293,7 @@ fun NewTask(navController: NavController){
             val taskTitle = title
             val taskLocation = location
             val taskDetails = details
-
-            // Formatear la fecha y hora seleccionadas
-
-            // Crear una instancia de ClsCategory si la categoría está seleccionada
+            val horario = if (isAM) "am" else "pm"
 
             if (taskTitle.isNotBlank() && taskLocation.isNotBlank() && taskDetails.isNotBlank()) {
                 // Crear una instancia de ClsTask y guardarla en la base de datos
@@ -291,7 +301,7 @@ fun NewTask(navController: NavController){
                     title = taskTitle,
                     location = taskLocation,
                     reminder = taskDetails,
-                    hour = "$hours:$minutes $isAM",
+                    hour = "$hours:$minutes $horario",
                     date =  calendarUiModel.selectedDate.date.format(
                         DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
                     ),
@@ -305,6 +315,7 @@ fun NewTask(navController: NavController){
                 // Manejar la validación de datos si algún campo está vacío, por ejemplo, mostrar un mensaje de error
                 Toast.makeText(context, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
             }
+            navController.popBackStack()
         }) {
             Text(text = stringResource(id = R.string.save), style = MaterialTheme.typography.bodyMedium)
         }
@@ -338,7 +349,7 @@ fun String.isNumeric(): Boolean {
 }
 
 @Composable
-fun colorItem(item: ClsCategory, onCategorySelected: (Int) -> Unit) {
+fun colorItem(item: ClsCategory, id:Int,onCategorySelected: (Int) -> Unit) {
     Column(
         modifier = Modifier
             .width(80.dp)
@@ -350,11 +361,12 @@ fun colorItem(item: ClsCategory, onCategorySelected: (Int) -> Unit) {
         Box(
             modifier = Modifier
                 .size(25.dp)
-                .background( color = if (item.isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary)
+                .background( color = if (item.categoryId==id) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                    shape = RoundedCornerShape(50) )
                 .clickable {
                     // Cambiar el estado de selección cuando se hace clic en el elemento
                     onCategorySelected(item.categoryId)
-                    println(item.categoryId)
+                    println(item.isSelected)
                 }
         ) {}
 
@@ -367,7 +379,7 @@ fun colorItem(item: ClsCategory, onCategorySelected: (Int) -> Unit) {
 
 
 @Composable
-fun colorList(categories: List<ClsCategory>, onCategorySelected: (Int) -> Unit) {
+fun colorList(categories: List<ClsCategory>, id:Int,onCategorySelected: (Int) -> Unit) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -376,7 +388,7 @@ fun colorList(categories: List<ClsCategory>, onCategorySelected: (Int) -> Unit) 
             .padding(10.dp)
     ) {
         items(categories) { item ->
-            colorItem(item, onCategorySelected)
+            colorItem(item, id,onCategorySelected)
         }
     }
 }

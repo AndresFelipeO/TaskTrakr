@@ -46,4 +46,5 @@ object MyAppRoute{
     const val TASK="Task"
     const val CATEGORY="Category"
     const val SETTINGS="Settings"
+    const val INFO="information"
 }

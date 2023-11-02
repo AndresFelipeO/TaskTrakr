@@ -2,6 +2,7 @@ package com.unicauca.edu.TaskTrakr.view.screens
 
 import android.app.Activity
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,17 +41,65 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.ViewCompat
 import androidx.navigation.NavController
+import com.unicauca.edu.TaskTrakr.controller.ClsTask
 import com.unicauca.edu.TaskTrakr.model.AppDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.time.DateTimeException
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Calendar
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Task(navController: NavController, tasks: () -> Unit){
+fun Task(navController: NavController, tasks: (Any?) -> Unit){
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
     var text by remember { mutableStateOf(selectedDate.timeInMillis.toString()) }
     var tasksState by remember { mutableStateOf(tasks) }
+
+    val context = LocalContext.current
+    val taskDao = AppDatabase.getInstance(context).taskDao()
+
+
+    val taskdb by produceState<List<ClsTask>?>(initialValue = null) {
+        try {
+            val result: List<ClsTask> = withContext(Dispatchers.IO) {
+                taskDao.getAllTasks()
+            }
+            value = result
+        } catch (e: Exception) {
+            Log.e("Database", "Error al acceder a la base de datos: ${e.message}")
+        }
+    }
+
+
+    var todayTask= mutableListOf<ClsTask>()
+
+    taskdb?.forEach { task ->
+        val dateFormat = DateTimeFormatter.ofPattern(
+            "EEEE, MMMM d, yyyy",
+            Locale.ENGLISH
+        ) // Define el formato de fecha
+
+        try {
+            val dateAndTimeParts = task.date.split(", hour=", " ")
+            val parsedDate = LocalDate.parse(
+                "${dateAndTimeParts[0]} ${dateAndTimeParts[1]} ${dateAndTimeParts[2]} ${dateAndTimeParts[3]}",
+                dateFormat
+            ) // Convierte la parte de la fecha en un objeto LocalDate
+            val today = LocalDate.now()
+            if (parsedDate == today) {
+                todayTask.add(task)
+            }
+        } catch (e: DateTimeParseException) {
+            // Maneja la excepción si el formato no coincide
+            // Por ejemplo, muestra un mensaje de error
+            println("Error al analizar la fecha: ${e.message}")
+        }
+
+    }
 
     Column (
         modifier = Modifier
@@ -76,37 +125,40 @@ fun Task(navController: NavController, tasks: () -> Unit){
 
         )
 
-
-
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp).clickable {
-                    navController.navigate("viewTask")
-                },
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()).padding(bottom = 70.dp)
         ) {
-            Column (modifier = Modifier.padding(horizontal = 12.dp, vertical = 15.dp)){
-                Text(text = "Parcial Móvil",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    )
-                Spacer(modifier = Modifier.height(5.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+            todayTask.forEach { task ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp, horizontal = 15.dp)
+                        .clickable {
+                            navController.navigate("viewTask/${task.tid}")
+                        },
                 ) {
-                    Text(text = "Salon 324")
-                    Row {
+                    Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 15.dp)) {
+                        Text(
+                            text = task.title,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
 
-                        Text(text = "4:00Pm  ")
-                        Icon(imageVector =  Icons.Filled.Info, contentDescription ="a" )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(text = task.location)
+                            Row {
+                                Text(text = task.hour)
+                                Icon(imageVector = Icons.Filled.Info, contentDescription = "a")
+                            }
+                        }
                     }
                 }
             }
         }
-
     }
 }
 
@@ -172,7 +224,7 @@ fun SimpleCalendar() {
                 .padding(16.dp, 0.dp)
                 ) {
             LazyVerticalGrid(columns = GridCells.Fixed(7), modifier = Modifier
-                .height(230.dp)
+                .height(200.dp)
                 .padding(0.dp, 8.dp)
             ) {
                 val emptyCells = List(firstDayOfWeek - 1) { null }

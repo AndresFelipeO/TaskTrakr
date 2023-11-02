@@ -22,5 +22,13 @@ interface TaskDao {
     @Delete
     fun deleteTask(task: ClsTask)
 
-    // Define otros métodos para operaciones CRUD relacionadas con ClsTask
+    @Query("SELECT * FROM ClsTask WHERE tid = :taskId")
+    fun getTaskById(taskId: Int): ClsTask?
+
+    @Query("SELECT categories.name AS categoryName FROM ClsTask AS tasks INNER JOIN ClsCategory AS categories ON tasks.category = categories.categoryId WHERE tasks.tid = :taskId")
+    fun getTaskWithCategoryName(taskId: Int): String
+
+    @Query("SELECT * FROM ClsTask WHERE category = :categoryId")
+    fun getTasksByCategoryId(categoryId: Int): List<ClsTask>
+
 }

@@ -8,5 +8,5 @@ import androidx.room.PrimaryKey
 data class ClsCategory (
     @PrimaryKey(autoGenerate = true) val categoryId: Int = 0, // Se generará automáticamente
     @ColumnInfo(name = "name") val name: String,
-    val isSelected: Boolean = false
+    var isSelected: Boolean = false
 )
